@@ -1,7 +1,15 @@
 'use strict';
 
-// Wrap everything in a DOMContentLoaded listener so it waits for the HTML to load
+// Wait for the page to load
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // 1. Check if config.js loaded
+    if (typeof CONFIG === 'undefined') {
+        console.error("CRITICAL: config.js not found or failed to load.");
+        alert("Local Error: config.js is missing from your folder.");
+        return;
+    }
+
     const jargonInput = document.getElementById('jargonInput');
     const bustBtn     = document.getElementById('bustBtn');
     const resultCard  = document.getElementById('resultCard');
@@ -9,9 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorBox    = document.getElementById('errorBox');
     const errorMsg    = document.getElementById('errorMsg');
 
-    // Check if CONFIG exists (prevents crash if config.js failed to load)
-    const token = typeof CONFIG !== 'undefined' ? CONFIG.HF_TOKEN : null;
     const HF_API_URL = 'https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn';
+    const token = CONFIG.HF_TOKEN;
+
+    // ... rest of your bustBtn.addEventListener code ...
 
     if (!bustBtn) return; // Safety check
 
