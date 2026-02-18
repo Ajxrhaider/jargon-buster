@@ -1,6 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* app/globals.css */
+@import "tailwindcss";
+
+/* This tells Tailwind v4 to load your config file */
+@config "../tailwind.config.js";
 
 :root {
   --background: #020617;
