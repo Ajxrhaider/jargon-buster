@@ -2,13 +2,13 @@
   "manifest_version": 3,
   "name": "Jargon Buster",
   "version": "1.0.0",
-  "description": "Paste or select complex text and get an instant ELI5 explanation powered by AI.",
+  "description": "Paste or select complex text and get an instant ELI5 explanation.",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+      "16": "icons/icon.png",
+      "48": "icons/icon.png",
+      "128": "icons/icon.png"
     }
   },
   "permissions": [
@@ -17,11 +17,12 @@
     "storage"
   ],
   "host_permissions": [
-    "https://api-inference.huggingface.co/*"
+    "https://api-inference.huggingface.co/*",
+    "https://router.huggingface.co/*"
   ],
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons/icon.png",
+    "48": "icons/icon.png",
+    "128": "icons/icon.png"
   }
 }
