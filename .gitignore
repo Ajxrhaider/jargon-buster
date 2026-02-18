@@ -1,1 +1,7 @@
 config.js
+node_modules/
+.next/
+.env.local
+out/
+build/
+.DS_Store
