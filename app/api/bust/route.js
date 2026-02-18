@@ -4,8 +4,12 @@ export async function POST(request) {
   try {
     const { text } = await request.json();
     
+    if (!process.env.HF_TOKEN) {
+      return NextResponse.json({ error: "API Token is missing from environment variables." }, { status: 500 });
+    }
+
     const response = await fetch(
-      'https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn',
+      'https://api-inference.huggingface.co/models/facebook/bart-large-cnn',
       {
         method: "POST",
         headers: {
@@ -14,14 +18,25 @@ export async function POST(request) {
         },
         body: JSON.stringify({ 
           inputs: text,
-          parameters: { max_length: 100, min_length: 30 }
+          parameters: { 
+            max_length: 100, 
+            min_length: 10,
+            do_sample: false 
+          }
         }),
       }
     );
 
     const result = await response.json();
+
+    // If Hugging Face returns an error (like "Model is loading")
+    if (result.error) {
+      return NextResponse.json({ summary_text: `AI Engine Notice: ${result.error}` });
+    }
+
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json({ error: "AI logic failed" }, { status: 500 });
+    console.error("Fetch Error:", error);
+    return NextResponse.json({ error: "Neural core timeout." }, { status: 500 });
   }
 }
