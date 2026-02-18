@@ -6,14 +6,8 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
-        hizaki: {
-          dark: '#0f172a',
-          indigo: '#6366f1',
-          slate: '#1e293b',
-        }
-      },
+      // Your custom Hizaki colors and animations go here
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }

@@ -3,22 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --background: 15, 23, 42; /* Slate 900 */
+  --background: #020617;
 }
 
 body {
-  background-color: rgb(var(--background));
-  color: #f1f5f9;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
-
-/* Custom glow animation for the background */
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.1); }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 8s infinite ease-in-out;
+  background: var(--background);
+  color: white;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
 }
