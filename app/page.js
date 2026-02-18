@@ -1,107 +1,117 @@
 "use client";
 import { useState } from 'react';
+import { Sparkles, ArrowRight, Copy, Check, Zap } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Home() {
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(result);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleBust = async () => {
     if (!input || loading) return;
     setLoading(true);
-    setResult('');
-    
     try {
       const res = await fetch('/api/bust', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: input }),
       });
       const data = await res.json();
       const summary = Array.isArray(data) ? data[0]?.summary_text : data?.summary_text;
-      setResult(summary || "Analysis complete, but no summary was generated.");
+      setResult(summary || "Analysis complete.");
     } catch (err) {
-      setResult("System Error: Unable to reach the intelligence core.");
+      setResult("System Error: Check API Connection.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Decor */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/20 rounded-full blur-[120px] animate-pulse-slow" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-blue-600/10 rounded-full blur-[100px]" />
+    <div className="min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-indigo-500/30">
+      {/* Dynamic Background Glow */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-indigo-600/10 rounded-full blur-[120px]" />
+        <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-blue-600/5 rounded-full blur-[100px]" />
+      </div>
 
-      <div className="w-full max-w-xl z-10">
-        <div className="bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden shadow-indigo-500/10">
-          
-          {/* Brand Header */}
-          <header className="bg-gradient-to-br from-indigo-600 to-indigo-800 p-8 text-center border-b border-white/10">
-            <h1 className="text-3xl font-black tracking-tighter uppercase italic flex items-center justify-center gap-2">
-              <span className="bg-white text-indigo-700 px-2 rounded-lg not-italic shadow-lg">⚡</span>
-              Jargon<span className="text-indigo-200 not-italic">Buster</span>
-            </h1>
-            <p className="text-indigo-100/60 text-[10px] font-bold tracking-[0.3em] mt-3 uppercase">
-              Hizaki Labs · Neural Simplification
-            </p>
-          </header>
+      <main className="relative z-10 max-w-2xl mx-auto pt-20 px-6 pb-20">
+        {/* Header Section */}
+        <div className="text-center mb-12 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold tracking-widest uppercase">
+            <Zap size={12} fill="currentColor" /> AI Powered v2.0
+          </div>
+          <h1 className="text-5xl font-black tracking-tighter italic text-white">
+            JARGON<span className="text-indigo-500 not-italic">BUSTER</span>
+          </h1>
+          <p className="text-slate-500 font-medium">Neural Simplification by Hizaki Intelligence Lab</p>
+        </div>
 
-          <div className="p-8 space-y-6">
-            {/* Input Area */}
-            <div className="relative group">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Paste complex corporate speak or technical jargon..."
-                className="w-full bg-slate-950/40 border border-slate-700/50 rounded-2xl p-5 text-slate-100 placeholder:text-slate-600 focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/40 transition-all outline-none resize-none leading-relaxed"
-                rows="5"
-              />
-            </div>
-
-            {/* Bust Button */}
-            <button
-              onClick={handleBust}
-              disabled={loading}
-              className={`w-full py-5 rounded-2xl font-black text-lg tracking-widest transition-all active:scale-[0.97] flex items-center justify-center gap-3 shadow-xl 
-                ${loading 
-                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed' 
-                  : 'bg-indigo-500 hover:bg-indigo-400 text-white shadow-indigo-500/20 hover:shadow-indigo-500/40'
-                }`}
-            >
-              {loading ? (
-                <>
-                  <div className="w-5 h-5 border-3 border-white/20 border-t-white rounded-full animate-spin" />
-                  <span>ANALYZING...</span>
-                </>
-              ) : (
-                "BUST THE JARGON"
-              )}
-            </button>
-
-            {/* Result Display */}
-            {result && (
-              <div className="pt-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div className="bg-gradient-to-b from-indigo-500/10 to-transparent border border-indigo-500/20 rounded-3xl p-6 relative group">
-                  <div className="absolute -top-3 left-6 bg-indigo-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest text-white shadow-lg">
-                    Simplified Output
-                  </div>
-                  <p className="text-indigo-50 text-lg leading-relaxed font-medium italic">
-                    "{result}"
-                  </p>
-                </div>
-              </div>
-            )}
+        {/* Interface Card */}
+        <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] shadow-2xl p-8 md:p-10 space-y-8">
+          <div className="space-y-3">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl p-6 text-lg text-white placeholder:text-slate-600 focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/40 transition-all outline-none resize-none min-h-[180px]"
+              placeholder="Paste your complex jargon here..."
+            />
           </div>
 
-          {/* Minimalist Footer */}
-          <footer className="p-5 text-center border-t border-white/5 bg-black/20">
-            <span className="text-slate-600 text-[9px] uppercase tracking-widest font-semibold">
-              Proprietary AI Core v4.0 // Secure Connection
-            </span>
-          </footer>
+          <button
+            onClick={handleBust}
+            disabled={loading}
+            className="w-full group bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold py-5 rounded-2xl transition-all flex items-center justify-center gap-3 text-lg shadow-[0_0_30px_rgba(79,70,229,0.2)] active:scale-[0.98]"
+          >
+            {loading ? (
+              <span className="animate-pulse">PROCESSING NEURONS...</span>
+            ) : (
+              <>
+                BUST THE JARGON <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
+          </button>
+
+          <AnimatePresence>
+            {result && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative mt-8 group"
+              >
+                <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-3xl p-8">
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="flex items-center gap-2 text-indigo-400 text-[10px] font-black uppercase tracking-widest">
+                      <Sparkles size={14} /> Simplified Logic
+                    </span>
+                    <button 
+                      onClick={handleCopy}
+                      className="text-slate-500 hover:text-white transition-colors"
+                    >
+                      {copied ? <Check size={18} className="text-green-400" /> : <Copy size={18} />}
+                    </button>
+                  </div>
+                  <p className="text-indigo-50 text-xl leading-relaxed italic font-medium">
+                    {result}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
+
+        <footer className="mt-12 text-center">
+          <p className="text-slate-600 text-[10px] font-bold tracking-[0.4em] uppercase">
+            Hizaki Labs © 2026 // Edge Computing Active
+          </p>
+        </footer>
+      </main>
     </div>
   );
 }
