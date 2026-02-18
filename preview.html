@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jargon Buster · Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --bg:          #111210;
+  --surface:     #1a1c19;
+  --surface2:    #222420;
+  --border:      #2e3029;
+  --border-glow: #4a5c2a;
+  --amber:       #e8c547;
+  --amber-dim:   #9e852f;
+  --amber-glow:  rgba(232, 197, 71, 0.12);
+  --green-ok:    #6abf69;
+  --red-err:     #e05c5c;
+  --text-primary:   #e8e6df;
+  --text-secondary: #7a7d72;
+  --text-dim:       #4a4d44;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── OUTER SHELL (preview centering) ── */
+html, body {
+  margin: 0; padding: 0;
+  background: #0a0b09;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'DM Mono', monospace;
+}
+
+.popup-shell {
+  width: 380px;
+  background: var(--bg);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px var(--border);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+a { color: var(--amber); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── HEADER ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+.logo-icon {
+  font-size: 18px;
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+.logo strong { color: var(--amber); font-weight: 700; }
+.settings-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  padding: 5px 7px;
+  display: flex;
+  align-items: center;
+  transition: var(--transition);
+}
+.settings-btn:hover {
+  border-color: var(--amber-dim);
+  color: var(--amber);
+  background: var(--amber-glow);
+}
+
+/* ── API PANEL ── */
+.api-panel {
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: none;
+}
+.api-panel.open { display: block; animation: slide-in 0.2s ease; }
+
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-family: 'DM Mono', monospace;
+}
+.key-input-row { display: flex; gap: 8px; }
+.text-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: var(--transition);
+  min-width: 0;
+}
+.text-input::placeholder { color: var(--text-dim); }
+.text-input:focus { border-color: var(--amber-dim); box-shadow: 0 0 0 2px var(--amber-glow); }
+.save-btn {
+  background: var(--amber);
+  color: #111;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.save-btn:hover { background: #f0d060; transform: translateY(-1px); }
+.save-btn:active { transform: translateY(0); }
+.key-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+.status-dot.saved { background: var(--green-ok); box-shadow: 0 0 6px var(--green-ok); }
+.status-dot.error { background: var(--red-err); }
+.api-hint { margin-top: 8px; font-size: 10px; color: var(--text-dim); }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); }
+
+/* ── MAIN ── */
+.main { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.input-section { display: flex; flex-direction: column; }
+.selection-badge {
+  display: none;
+  background: var(--amber-glow);
+  border: 1px solid var(--amber-dim);
+  color: var(--amber);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 20px;
+  text-transform: none;
+  font-weight: 400;
+}
+.selection-badge.visible { display: inline-flex; }
+.jargon-textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  line-height: 1.65;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  resize: vertical;
+  outline: none;
+  transition: var(--transition);
+  margin-top: 8px;
+  min-height: 100px;
+}
+.jargon-textarea::placeholder { color: var(--text-dim); font-style: italic; }
+.jargon-textarea:focus { border-color: var(--amber-dim); box-shadow: 0 0 0 2px var(--amber-glow); }
+.char-count { font-size: 10px; color: var(--text-dim); text-align: right; margin-top: 4px; }
+
+/* ── BUST BUTTON ── */
+.bust-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--amber);
+  color: #111210;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 11px 20px;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  overflow: hidden;
+  width: 100%;
+}
+.bust-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+.bust-btn:hover:not(:disabled) {
+  background: #f0d060;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(232, 197, 71, 0.3);
+}
+.bust-btn:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
+.bust-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-icon { font-size: 16px; }
+.spinner {
+  display: none;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(0,0,0,0.3);
+  border-top-color: #111;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+.bust-btn.loading .spinner { display: block; }
+.bust-btn.loading .btn-icon { display: none; }
+.bust-btn.loading .btn-label { opacity: 0.7; }
+
+/* ── ERROR ── */
+.error-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(224, 92, 92, 0.1);
+  border: 1px solid rgba(224, 92, 92, 0.3);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  color: #f0a0a0;
+  font-size: 12px;
+  line-height: 1.5;
+  animation: slide-in 0.2s ease;
+}
+.error-icon { flex-shrink: 0; font-size: 14px; }
+
+/* ── RESULT CARD ── */
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: slide-in 0.25s ease;
+}
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.result-label {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber);
+  font-weight: 500;
+}
+.copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.copy-btn:hover { border-color: var(--amber-dim); color: var(--amber); background: var(--amber-glow); }
+.copy-btn.copied { border-color: var(--green-ok); color: var(--green-ok); }
+.result-text {
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  padding: 14px 16px;
+  font-style: italic;
+}
+
+/* ── FOOTER ── */
+.footer {
+  padding: 8px 16px 12px;
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  letter-spacing: 0.02em;
+}
+.model-tag {
+  background: var(--surface2);
+  color: var(--amber-dim);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 9px;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse-glow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(232, 197, 71, 0.6)); }
+  50%       { filter: drop-shadow(0 0 10px rgba(232, 197, 71, 0.9)); }
+}
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="popup-shell">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">⚡</span>
+      <span>Jargon<strong>Buster</strong></span>
+    </div>
+    <button class="settings-btn" id="toggleSettings" title="API Settings">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- API PANEL -->
+  <section class="api-panel" id="apiPanel">
+    <label class="field-label" for="apiKeyInput">Hugging Face Access Token</label>
+    <div class="key-input-row">
+      <input type="password" id="apiKeyInput" class="text-input" placeholder="hf_••••••••••••••••••••••" autocomplete="off" />
+      <button class="save-btn" id="saveKeyBtn">Save</button>
+    </div>
+    <div class="key-status" id="keyStatus">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">No token saved</span>
+    </div>
+    <p class="api-hint">Get a free token at <a href="#" target="_blank">huggingface.co</a></p>
+  </section>
+
+  <!-- DIVIDER -->
+  <div class="divider"></div>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="input-section">
+      <label class="field-label" for="jargonInput">
+        Paste or select text to decode
+        <span class="selection-badge visible" id="selectionBadge">📋 auto-filled from page</span>
+      </label>
+      <textarea id="jargonInput" class="jargon-textarea" rows="5" spellcheck="false">Amortization is the process of spreading out a loan into a series of fixed payments over time. The loan is paid off at the end of the payment schedule, and each payment includes both interest and principal components that shift over time.</textarea>
+      <div class="char-count" id="charCount">244 characters</div>
+    </div>
+
+    <button class="bust-btn" id="bustBtn">
+      <span class="btn-icon">⚡</span>
+      <span class="btn-label">Bust the Jargon</span>
+      <span class="spinner" id="spinner"></span>
+    </button>
+
+    <!-- DEMO ERROR (hidden by default) -->
+    <div class="error-box" id="errorBox" style="display:none">
+      <span class="error-icon">⚠</span>
+      <span id="errorMsg">🔥 AI is warming up — try again in 10 seconds.</span>
+    </div>
+
+    <!-- DEMO RESULT -->
+    <div class="result-card" id="resultCard">
+      <div class="result-header">
+        <span class="result-label">ELI5 Explanation</span>
+        <button class="copy-btn" id="copyBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          <span id="copyLabel">Copy</span>
+        </button>
+      </div>
+      <p class="result-text" id="resultText">When you borrow money, instead of paying it all back at once, you split it into smaller payments you make every month. Each payment slowly chips away at what you owe, plus a little extra for the bank letting you borrow it.</p>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    Powered by <span class="model-tag">facebook/bart-large-cnn</span> via Hugging Face
+  </footer>
+
+</div>
+
+<script>
+// ── PREVIEW INTERACTIVITY ──
+const toggleSettings = document.getElementById('toggleSettings');
+const apiPanel       = document.getElementById('apiPanel');
+const saveKeyBtn     = document.getElementById('saveKeyBtn');
+const apiKeyInput    = document.getElementById('apiKeyInput');
+const statusDot      = document.getElementById('statusDot');
+const statusText     = document.getElementById('statusText');
+const jargonInput    = document.getElementById('jargonInput');
+const charCount      = document.getElementById('charCount');
+const bustBtn        = document.getElementById('bustBtn');
+const errorBox       = document.getElementById('errorBox');
+const resultCard     = document.getElementById('resultCard');
+const resultText     = document.getElementById('resultText');
+const copyBtn        = document.getElementById('copyBtn');
+const copyLabel      = document.getElementById('copyLabel');
+
+toggleSettings.addEventListener('click', () => {
+  apiPanel.classList.toggle('open');
+});
+
+saveKeyBtn.addEventListener('click', () => {
+  const val = apiKeyInput.value.trim();
+  if (!val) { setStatus('error', 'Enter a token first.'); return; }
+  if (!val.startsWith('hf_')) { setStatus('error', 'Token must start with "hf_".'); return; }
+  setStatus('saved', 'Token saved securely ✓');
+  apiKeyInput.value = '';
+  apiKeyInput.placeholder = 'hf_••••••••••••••••••••••  (saved)';
+  setTimeout(() => apiPanel.classList.remove('open'), 800);
+});
+
+function setStatus(state, msg) {
+  statusDot.className = 'status-dot';
+  if (state === 'saved') statusDot.classList.add('saved');
+  if (state === 'error') statusDot.classList.add('error');
+  statusText.textContent = msg;
+}
+
+jargonInput.addEventListener('input', () => {
+  const l = jargonInput.value.length;
+  charCount.textContent = `${l.toLocaleString()} character${l !== 1 ? 's' : ''}`;
+});
+
+// Demo "Bust" flow
+const demoOutputs = [
+  "When you borrow money, instead of paying it all back at once, you split it into smaller payments you make every month. Each payment slowly chips away at what you owe, plus a little extra for the bank letting you borrow it.",
+  "Think of it like eating a big pizza slice by slice instead of all at once — you pay a little bit every month until the whole loan is finished!",
+  "It's like a chore chart for money. You have a big debt and you break it into tiny, manageable jobs — a little bit every month — until it's all done."
+];
+let demoIdx = 0;
+
+bustBtn.addEventListener('click', () => {
+  bustBtn.disabled = true;
+  bustBtn.classList.add('loading');
+  resultCard.style.display = 'none';
+  errorBox.style.display = 'none';
+
+  setTimeout(() => {
+    bustBtn.disabled = false;
+    bustBtn.classList.remove('loading');
+    resultText.textContent = demoOutputs[demoIdx % demoOutputs.length];
+    demoIdx++;
+    resultCard.style.display = 'block';
+    resultCard.style.animation = 'none';
+    void resultCard.offsetHeight;
+    resultCard.style.animation = 'slide-in 0.25s ease';
+  }, 1800);
+});
+
+copyBtn.addEventListener('click', () => {
+  copyBtn.classList.add('copied');
+  copyLabel.textContent = 'Copied!';
+  setTimeout(() => { copyBtn.classList.remove('copied'); copyLabel.textContent = 'Copy'; }, 2000);
+});
+
+// Toggle error demo on triple-click of footer
+document.querySelector('.footer').addEventListener('click', () => {
+  errorBox.style.display = errorBox.style.display === 'none' ? 'flex' : 'none';
+});
+</script>
+</body>
+</html>
