@@ -4,12 +4,8 @@ export async function POST(request) {
   try {
     const { text } = await request.json();
     
-    if (!process.env.HF_TOKEN) {
-      return NextResponse.json({ error: "API Token is missing from environment variables." }, { status: 500 });
-    }
-
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/facebook/bart-large-cnn',
+      'https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn',
       {
         method: "POST",
         headers: {
@@ -20,7 +16,7 @@ export async function POST(request) {
           inputs: text,
           parameters: { 
             max_length: 100, 
-            min_length: 10,
+            min_length: 30,
             do_sample: false 
           }
         }),
@@ -29,14 +25,19 @@ export async function POST(request) {
 
     const result = await response.json();
 
-    // If Hugging Face returns an error (like "Model is loading")
+    // Handle the "Model is loading" estimated time response
+    if (result.estimated_time) {
+      return NextResponse.json({ 
+        summary_text: "System warming up... Please try again in 20 seconds." 
+      });
+    }
+
     if (result.error) {
-      return NextResponse.json({ summary_text: `AI Engine Notice: ${result.error}` });
+      return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Fetch Error:", error);
     return NextResponse.json({ error: "Neural core timeout." }, { status: 500 });
   }
 }
