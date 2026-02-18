@@ -28,7 +28,7 @@ const copyLabel       = document.getElementById('copyLabel');
 // Updated Endpoint: Moving from api-inference to router.huggingface.co
 const HF_API_URL = 'https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn';
 const STORAGE_KEY = 'jb_hf_token';
-const HARDCODED_TOKEN = ''; 
+const HARDCODED_TOKEN = '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'; 
 
 // ─── INIT ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
