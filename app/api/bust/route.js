@@ -21,11 +21,16 @@ export async function POST(request) {
 
     const result = await response.json();
 
-    // If the model is currently loading, HF returns an 'estimated_time'
-    if (result.estimated_time || result.error?.includes("loading")) {
-       return NextResponse.json([{ 
-         summary_text: "System is warming up... Please try again in 10 seconds!" 
-       }]);
+    // ERROR HANDLING: Handle the 'Model Loading' state
+    if (result.estimated_time) {
+      return NextResponse.json([{ 
+        summary_text: "System is warming up... Please try again in 15 seconds." 
+      }]);
+    }
+
+    if (result.error) {
+      console.error("HF Error:", result.error);
+      return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
     return NextResponse.json(result);
